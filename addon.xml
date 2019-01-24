@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon id="plugin.video.ace"
+  version="0.0.1"
+  name="ACE Streaming"
+  provider-name="Syco">
+  <requires>
+    <import addon="xbmc.python" version="2.25.0"/>
+  </requires>
+  <extension point="xbmc.python.pluginsource" library="init.py">
+    <provides>video</provides>
+  </extension>
+  <extension point="xbmc.addon.metadata">
+    <platform>all</platform>
+    <summary lang="en">ACE Kodi Video Plugin</summary>
+    <description lang="en">An ACE video plugin for Kodi mediacenter</description>
+    <disclaimer lang="en">Videos are provided by people... online... somewhere...</disclaimer>
+    <assets>
+      <icon>icon.png</icon>
+    </assets>
+    <forum>https://github.com/syco/plugin.video.ace</forum>
+    <website>https://github.com/syco/plugin.video.ace</website>
+    <email></email>
+    <source>https://github.com/syco/plugin.video.ace</source>
+  </extension>
+</addon>

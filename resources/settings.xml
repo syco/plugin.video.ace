@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings>
+  <category label="30100">
+    <setting label="30101" type="text" id="ace_host" default="127.0.0.1"/>
+    <setting label="30102" type="number" id="ace_port" default="6878"/>
+  </category>
+  <category label="30200">
+    <setting label="30201" type="bool" id="show_arenavision" default="true"/>
+    <setting label="30202" type="bool" id="show_reddit_boxing" default="true"/>
+    <setting label="30203" type="bool" id="show_reddit_mma" default="true"/>
+    <setting label="30204" type="bool" id="show_reddit_motorsports" default="true"/>
+    <setting label="30205" type="bool" id="show_reddit_nba" default="true"/>
+    <setting label="30206" type="bool" id="show_reddit_nfl" default="true"/>
+    <setting label="30207" type="bool" id="show_reddit_soccer" default="true"/>
+  </category>
+</settings>

@@ -1,2 +1,4 @@
-# plugin.video.ace
-ace plugin for kodi
+# Dependencies
+- python-requests
+- python-lxml
+
