@@ -117,6 +117,7 @@ def list_matches_reddit(title, sub, sep):
       break
     else:
       plus = "?after=" + after
+  xbmcplugin.addSortMethod(_handle, xbmcplugin.SORT_METHOD_LABEL)
   xbmcplugin.endOfDirectory(_handle)
 
 
