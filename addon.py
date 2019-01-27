@@ -70,6 +70,7 @@ def list_matches_arenavision(title):
   tomorrow = '{:%d/%m/%Y}'.format(datetime.utcnow() + timedelta(days=1))
   page = requests.get('http://arenavision.in/guide', cookies={'Cookie': 'beget=begetok; expires=' + ('{:%a, %d %b %Y %H:%M:%S GMT}'.format(datetime.utcnow() + timedelta(seconds=19360000))) + '; path=/'}, headers=headers).content
   tree = html.fromstring(page)
+  pattern = re.compile(r'([0-9-]+)\s*\[([A-Z]+)\]', re.IGNORECASE)
 
   for item in tree.xpath('//tr[count(./td)>=6]'):
     av_date = item.xpath('./td[1]')[0].text.encode('utf-8').strip()
@@ -82,14 +83,14 @@ def list_matches_arenavision(title):
     av_langs = '' 
     urls = []
     for t1 in item.xpath('./td[6]'):
-      tokens = t1.text.split(' ')
-      av_langs = av_langs + ' ' + tokens[1]
-      for c in tokens[0].split('-'):
+      m = re.match(pattern, t1.text)
+      av_langs = av_langs + ' ' + m.group(2)
+      for c in m.group(1).split('-'):
         c = c.strip()
         if c[0] == 'W':
-          urls.append(tokens[1] + ' ' + c + '!' + (tree.xpath('//a[text()="World Cup ' + c[1:] + '"]')[0]).get('href'))
+          urls.append(m.group(2) + ' ' + c + '!' + (tree.xpath('//a[text()="World Cup ' + c[1:] + '"]')[0]).get('href'))
         else:
-          urls.append(tokens[1] + ' ' + c + '!' + (tree.xpath('//a[text()="ArenaVision ' + c + '"]')[0]).get('href'))
+          urls.append(m.group(2) + ' ' + c + '!' + (tree.xpath('//a[text()="ArenaVision ' + c + '"]')[0]).get('href'))
     title = av_date + ' ' + av_time + ' | ' + av_sport + ' | ' + av_tournament + ' | ' + av_match + ' |' + av_langs
     listitem = xbmcgui.ListItem(label=title)
     listitem.setInfo('video', {'title': title, 'mediatype': 'video'})
