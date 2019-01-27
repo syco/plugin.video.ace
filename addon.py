@@ -26,37 +26,37 @@ def list_categories():
   xbmcplugin.setPluginCategory(_handle, 'ACE')
   xbmcplugin.setContent(_handle, 'videos')
 
-  if addon.getSetting('show_arenavision'):
+  if addon.getSetting('show_arenavision') == "true":
     listitem = xbmcgui.ListItem(label='Arenavision')
     listitem.setInfo('video', {'title': 'Arenavision', 'mediatype': 'video'})
     xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?action=listing&title=Arenavision&provider=arenavision'.format(_pid), listitem=listitem, isFolder=True)
 
-  if addon.getSetting('show_reddit_boxing'):
+  if addon.getSetting('show_reddit_boxing') == "true":
     listitem = xbmcgui.ListItem(label='Reddit Boxing')
     listitem.setInfo('video', {'title': 'Reddit Boxing', 'mediatype': 'video'})
     xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?action=listing&title=Reddit%20Boxing&provider=reddit&sub=boxingstreams&sep=%20vs'.format(_pid), listitem=listitem, isFolder=True)
 
-  if addon.getSetting('show_reddit_mma'):
+  if addon.getSetting('show_reddit_mma') == "true":
     listitem = xbmcgui.ListItem(label='Reddit MMA')
     listitem.setInfo('video', {'title': 'Reddit MMA', 'mediatype': 'video'})
     xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?action=listing&title=Reddit%20MMA&provider=reddit&sub=MMAStreams&sep=%20vs'.format(_pid), listitem=listitem, isFolder=True)
 
-  if addon.getSetting('show_reddit_motorsports'):
+  if addon.getSetting('show_reddit_motorsports') == "true":
     listitem = xbmcgui.ListItem(label='Reddit MotorSports')
     listitem.setInfo('video', {'title': 'Reddit MotorSports', 'mediatype': 'video'})
     xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?action=listing&title=Reddit%20MotorSports&provider=reddit&sub=motorsportsstreams&sep=%20utc'.format(_pid), listitem=listitem, isFolder=True)
 
-  if addon.getSetting('show_reddit_nba'):
+  if addon.getSetting('show_reddit_nba') == "true":
     listitem = xbmcgui.ListItem(label='Reddit NBA')
     listitem.setInfo('video', {'title': 'Reddit NBA', 'mediatype': 'video'})
     xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?action=listing&title=Reddit%20NBA&provider=reddit&sub=nbastreams&sep=%20@'.format(_pid), listitem=listitem, isFolder=True)
 
-  if addon.getSetting('show_reddit_nfl'):
+  if addon.getSetting('show_reddit_nfl') == "true":
     listitem = xbmcgui.ListItem(label='Reddit NFL')
     listitem.setInfo('video', {'title': 'Reddit NFL', 'mediatype': 'video'})
     xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?action=listing&title=Reddit%20NFL&provider=reddit&sub=nflstreams&sep=%20@'.format(_pid), listitem=listitem, isFolder=True)
 
-  if addon.getSetting('show_reddit_soccer'):
+  if addon.getSetting('show_reddit_soccer') == "true":
     listitem = xbmcgui.ListItem(label='Reddit Soccer')
     listitem.setInfo('video', {'title': 'Reddit Soccer', 'mediatype': 'video'})
     xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?action=listing&title=Reddit%20Soccer&provider=reddit&sub=soccerstreams_other&sep=%20vs'.format(_pid), listitem=listitem, isFolder=True)
@@ -72,13 +72,13 @@ def list_matches_arenavision(title):
   tree = html.fromstring(page)
 
   for item in tree.xpath('//tr[count(./td)>=6]'):
-    av_date = item.xpath('./td[1]')[0].text.decode('UTF-8')
+    av_date = item.xpath('./td[1]')[0].text.encode('utf-8').strip()
     if today != av_date and tomorrow !=av_date:
       continue
-    av_time = item.xpath('./td[2]')[0].text.decode('UTF-8')
-    av_sport = item.xpath('./td[3]')[0].text.decode('UTF-8')
-    av_tournament = item.xpath('./td[4]')[0].text.decode('UTF-8')
-    av_match = item.xpath('./td[5]')[0].text.decode('UTF-8')
+    av_time = item.xpath('./td[2]')[0].text.encode('utf-8').strip()
+    av_sport = item.xpath('./td[3]')[0].text.encode('utf-8').strip()
+    av_tournament = item.xpath('./td[4]')[0].text.encode('utf-8').strip()
+    av_match = item.xpath('./td[5]')[0].text.encode('utf-8').strip()
     av_langs = '' 
     urls = []
     for t1 in item.xpath('./td[6]'):
@@ -97,17 +97,17 @@ def list_matches_arenavision(title):
   xbmcplugin.endOfDirectory(_handle)
 
 
-def list_matches(title, sub, sep):
+def list_matches_reddit(title, sub, sep):
   xbmcplugin.setPluginCategory(_handle, title)
   plus = ""
   while True:
     page = requests.get('https://www.reddit.com/r/{0}.json{1}'.format(sub, plus), headers=headers).content
     js = json.loads(page)
     for t3 in js["data"]["children"]:
-      title = t3["data"]["title"]
+      title = t3["data"]["title"].encode('utf-8').strip()
       if title.lower().find(sep) != -1:
-        title2 = "{0}, by {1}".format(title, t3["data"]["author"]).decode('UTF-8')
-        url2 = t3["data"]["url"].decode('UTF-8')
+        title2 = "{0}, by {1}".format(title, t3["data"]["author"].encode('utf-8').strip())
+        url2 = t3["data"]["url"].encode('utf-8').strip()
         listitem = xbmcgui.ListItem(label=title)
         listitem.setInfo('video', {'title': title, 'mediatype': 'video'})
         xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?action=sublisting&provider=reddit&url={1}&title={2}'.format(_pid, urllib.quote(url2), urllib.quote(title)), listitem=listitem, isFolder=True)
@@ -155,7 +155,7 @@ def list_links_reddit(title, url):
     arr = findAllData(js, "data")
     for t3 in arr:
       for m in re.finditer(pattern, t3["body"]):
-        acedesc = "{0}{1} by {2}".format(m.group(1), m.group(3), t3["author"])
+        acedesc = "{0} - {1}{2} by {3}".format(m.group(2), m.group(1), m.group(3), t3["author"])
         listitem = xbmcgui.ListItem(label=acedesc)
         listitem.setInfo('video', {'title': acedesc, 'mediatype': 'video'})
         listitem.setProperty('IsPlayable', 'true')
