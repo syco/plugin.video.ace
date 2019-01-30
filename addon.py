@@ -31,6 +31,11 @@ def list_categories():
     listitem.setInfo('video', {'title': 'Arenavision', 'mediatype': 'video'})
     xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?action=listing&title=Arenavision&provider=arenavision'.format(_pid), listitem=listitem, isFolder=True)
 
+  if addon.getSetting('show_platinsport') == "true":
+    listitem = xbmcgui.ListItem(label='Platinsport')
+    listitem.setInfo('video', {'title': 'Platinsport', 'mediatype': 'video'})
+    xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?action=listing&title=Platinsport&provider=platinsport'.format(_pid), listitem=listitem, isFolder=True)
+
   if addon.getSetting('show_reddit_boxing') == "true":
     listitem = xbmcgui.ListItem(label='Reddit Boxing')
     listitem.setInfo('video', {'title': 'Reddit Boxing', 'mediatype': 'video'})
@@ -98,6 +103,22 @@ def list_matches_arenavision(title):
   xbmcplugin.endOfDirectory(_handle)
 
 
+def list_matches_platinsport(title):
+  xbmcplugin.setPluginCategory(_handle, title)
+  page = requests.get('http://www.platinsport.com/', headers=headers).content
+  tree = html.fromstring(page)
+
+  for item in tree.xpath('//article[@class="item-list"]'):
+    date = item.xpath('./h2[@class="post-box-title"]/a')[0].text.encode('utf-8').strip()
+    for row in tree.xpath('.//tr'):
+      title = date[0:10] + ' ' + row.xpath('.//td[2]/strong')[0].text.encode('utf-8').strip()
+      url = row.xpath('.//td[3]/a')[0].get('href').encode('utf-8').strip()
+      listitem = xbmcgui.ListItem(label=title)
+      listitem.setInfo('video', {'title': title, 'mediatype': 'video'})
+      xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?action=sublisting&provider=platinsport&url={1}&title={2}'.format(_pid, urllib.quote(url[20:]), urllib.quote(title)), listitem=listitem, isFolder=True)
+  xbmcplugin.endOfDirectory(_handle)
+
+
 def list_matches_reddit(title, sub, sep):
   xbmcplugin.setPluginCategory(_handle, title)
   plus = ""
@@ -132,6 +153,18 @@ def list_links_arenavision(title, url):
       listitem.setInfo('video', {'title': t[0], 'mediatype': 'video'})
       listitem.setProperty('IsPlayable', 'true')
       xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?action=play&video={1}'.format(_pid, 'http://{0}:{1}/ace/manifest.m3u8?id={2}'.format(addon.getSetting('ace_host'), addon.getSetting('ace_port'), m.group(1))), listitem=listitem, isFolder=False)
+  xbmcplugin.endOfDirectory(_handle)
+
+
+def list_links_platinsport(title, url):
+  xbmcplugin.setPluginCategory(_handle, title)
+  pattern = re.compile(r'acestream:\/\/([0-z]{40})', re.IGNORECASE)
+  page = requests.get(url, headers=headers).content
+  for m in re.finditer(pattern, page):
+    listitem = xbmcgui.ListItem(label=title)
+    listitem.setInfo('video', {'title': title, 'mediatype': 'video'})
+    listitem.setProperty('IsPlayable', 'true')
+    xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?action=play&video={1}'.format(_pid, 'http://{0}:{1}/ace/manifest.m3u8?id={2}'.format(addon.getSetting('ace_host'), addon.getSetting('ace_port'), m.group(1))), listitem=listitem, isFolder=False)
   xbmcplugin.endOfDirectory(_handle)
 
 
@@ -182,12 +215,16 @@ def router(paramstring):
     if params['action'] == 'listing':
       if params['provider'] == 'arenavision':
         list_matches_arenavision(params['title'])
+      elif params['provider'] == 'platinsport':
+        list_matches_platinsport(params['title'])
       elif params['provider'] == 'reddit':
         list_matches_reddit(params['title'], params['sub'], params['sep'])
 
     elif params['action'] == 'sublisting':
       if params['provider'] == 'arenavision':
         list_links_arenavision(params['title'], params['url'])
+      elif params['provider'] == 'platinsport':
+        list_links_platinsport(params['title'], params['url'])
       elif params['provider'] == 'reddit':
         list_links_reddit(params['title'], params['url'])
 
