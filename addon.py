@@ -143,7 +143,7 @@ def build_arenavision_list0(title):
   tomorrow = '{:%d/%m/%Y}'.format(datetime.utcnow() + timedelta(days=1))
   page = requests.get('http://arenavision.in/guide', cookies={'Cookie': 'beget=begetok; expires=' + ('{:%a, %d %b %Y %H:%M:%S GMT}'.format(datetime.utcnow() + timedelta(seconds=19360000))) + '; path=/'}, headers=headers).content
   tree = html.fromstring(page)
-  pattern = re.compile(r'([0-9-]+)\s*\[([A-Z]+)\]', re.IGNORECASE)
+  pattern = re.compile(r'([0-9-]+)\W*([A-Z]+)', re.IGNORECASE)
 
   for item in tree.xpath('//tr[count(./td)>=6]'):
     av_date = item.xpath('./td[1]')[0].text.encode('utf-8').strip()
@@ -174,12 +174,13 @@ def build_arenavision_list0(title):
         "url" : urls
         }
     xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=True)
+
   xbmcplugin.endOfDirectory(_handle)
 
-def build_arenavision_list1(title, url):
+def build_arenavision_list1(title, urls):
   xbmcplugin.setPluginCategory(_handle, title)
   pattern = re.compile(r'acestream:\/\/([0-z]{40})', re.IGNORECASE)
-  for r in url.split('|'):
+  for r in urls:
     t = r.split('!')
     page = requests.get(t[1], cookies={'Cookie': 'beget=begetok; expires=' + ('{:%a, %d %b %Y %H:%M:%S GMT}'.format(datetime.utcnow() + timedelta(seconds=19360000))) + '; path=/'}, headers=headers).content
     for m in re.finditer(pattern, page):
@@ -224,19 +225,24 @@ def build_platinsport_list1(title, url):
     listitem = xbmcgui.ListItem(label=title)
     listitem.setInfo('video', {'title': title, 'mediatype': 'video'})
     listitem.setProperty('IsPlayable', 'true')
-    xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?action=play&video={1}'.format(_pid, 'http://{0}:{1}/ace/manifest.m3u8?id={2}'.format(addon.getSetting('ace_host'), addon.getSetting('ace_port'), m.group(1))), listitem=listitem, isFolder=False)
     data = {
         "action": "play",
         "video" : 'http://{0}:{1}/ace/manifest.m3u8?id={2}'.format(addon.getSetting('ace_host'), addon.getSetting('ace_port'), m.group(1))
         }
     xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=False)
+
   xbmcplugin.endOfDirectory(_handle)
 
 
 
 def build_reddit_list0(title, subs):
+  xbmcplugin.setPluginCategory(_handle, title)
   for data in subs:
+    listitem = xbmcgui.ListItem(label=data['title'])
+    listitem.setInfo('video', {'title': data['title'], 'mediatype': 'video'})
     xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=True)
+
+  xbmcplugin.endOfDirectory(_handle)
 
 def build_reddit_list1(title, sub, sep):
   xbmcplugin.setPluginCategory(_handle, title)
@@ -316,14 +322,22 @@ xbmc.log(" ".join(sys.argv), xbmc.LOGNOTICE)
 
 
 def router(paramstring):
-  params = json.loads(paramstring)
+  try:
+    params = json.loads(urllib.unquote(paramstring[5:]))
+  except Exception as e:
+    xbmc.log("type error: " + str(e), xbmc.LOGERROR)
+    params = False
+
   if params:
     if params['action'] == 'play':
       play_video(params['video'])
 
     elif params['provider'] == 'arenavision':
       if params['action'] == 'list0':
-        build_arenavision_list0(params['title'])
+        try:
+          build_arenavision_list0(params['title'])
+        except Exception as e:
+          xbmc.log("type error: " + str(e), xbmc.LOGERROR)
       elif params['action'] == 'list1':
         build_arenavision_list1(params['title'], params['url'])
 
@@ -334,10 +348,11 @@ def router(paramstring):
         build_platinsport_list1(params['title'], params['url'])
 
     elif params['provider'] == 'reddit':
+      if params['action'] == 'list0':
         build_reddit_list0(params['title'], params['subs'])
-      if params['action'] == 'list1':
-        build_reddit_list1(params['title'], params['sub'], params['sep'])
       elif params['action'] == 'list1':
+        build_reddit_list1(params['title'], params['sub'], params['sep'])
+      elif params['action'] == 'list2':
         build_reddit_list2(params['title'], params['url'])
   else:
     list_categories()
