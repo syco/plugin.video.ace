@@ -17,8 +17,11 @@ addon = xbmcaddon.Addon()
 
 _pid = sys.argv[0]
 _handle = int(sys.argv[1])
-headers = {
-    'User-Agent': 'Mozilla/5.0 (Linux; Android 5.0; SM-G900P Build/LRX21T) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.87 Mobile Safari/537.36',
+headers_mobile = {
+    'User-Agent': 'Mozilla/5.0 (Linux; Android 5.0; SM-G900P Build/LRX21T) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.87 Mobile Safari/537.36'
+    }
+headers_desktop = {
+    'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:65.0) Gecko/20100101 Firefox/65.0'
     }
 
 
@@ -27,8 +30,8 @@ def list_categories():
   xbmcplugin.setPluginCategory(_handle, 'ACE')
   xbmcplugin.setContent(_handle, 'videos')
 
-  listitem = xbmcgui.ListItem(label='Refresh List')
-  listitem.setInfo('video', {'title': 'Refresh List', 'mediatype': 'video'})
+  listitem = xbmcgui.ListItem(label=' Refresh List')
+  listitem.setInfo('video', {'title': ' Refresh List', 'mediatype': 'video'})
   xbmcplugin.addDirectoryItem(handle=_handle, url=_pid, listitem=listitem, isFolder=True)
 
   if addon.getSetting('show_arenavision') == "true":
@@ -38,6 +41,16 @@ def list_categories():
         "provider": "arenavision",
         "action": "list0",
         "title": "Arenavision"
+        }
+    xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=True)
+
+  if addon.getSetting('show_livetvsx') == "true":
+    listitem = xbmcgui.ListItem(label='LiveTV.sx')
+    listitem.setInfo('video', {'title': 'LiveTV.sx', 'mediatype': 'video'})
+    data = {
+        "provider": "livetvsx",
+        "action": "list0",
+        "title": "LiveTV.sx"
         }
     xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=True)
 
@@ -151,8 +164,8 @@ def list_categories():
 def build_arenavision_list0(title):
   xbmcplugin.setPluginCategory(_handle, title)
 
-  listitem = xbmcgui.ListItem(label='Refresh List')
-  listitem.setInfo('video', {'title': 'Refresh List', 'mediatype': 'video'})
+  listitem = xbmcgui.ListItem(label=' Refresh List')
+  listitem.setInfo('video', {'title': ' Refresh List', 'mediatype': 'video'})
   data = {
       "provider": "arenavision",
       "action": "list0",
@@ -162,18 +175,18 @@ def build_arenavision_list0(title):
 
   today = '{:%d/%m/%Y}'.format(datetime.utcnow())
   tomorrow = '{:%d/%m/%Y}'.format(datetime.utcnow() + timedelta(days=1))
-  page = requests.get('http://arenavision.in/guide', cookies={'Cookie': 'beget=begetok; expires=' + ('{:%a, %d %b %Y %H:%M:%S GMT}'.format(datetime.utcnow() + timedelta(seconds=19360000))) + '; path=/'}, headers=headers).content
+  page = requests.get('http://arenavision.in/guide', cookies={'Cookie': 'beget=begetok; expires=' + ('{:%a, %d %b %Y %H:%M:%S GMT}'.format(datetime.utcnow() + timedelta(seconds=19360000))) + '; path=/'}, headers=headers_mobile).content
   tree = html.fromstring(page)
   pattern = re.compile(r'([0-9-]+)\W*([A-Z]+)', re.IGNORECASE)
 
   for item in tree.xpath('//tr[count(./td)>=6]'):
-    av_date = item.xpath('./td[1]')[0].text.encode('utf-8').strip()
+    av_date = item.xpath('./td[1]')[0].text_content().encode('utf-8').strip()
     if today != av_date and tomorrow !=av_date:
       continue
-    av_time = item.xpath('./td[2]')[0].text.encode('utf-8').strip()
-    av_sport = item.xpath('./td[3]')[0].text.encode('utf-8').strip()
-    av_tournament = item.xpath('./td[4]')[0].text.encode('utf-8').strip()
-    av_match = item.xpath('./td[5]')[0].text.encode('utf-8').strip()
+    av_time = item.xpath('./td[2]')[0].text_content().encode('utf-8').strip()
+    av_sport = item.xpath('./td[3]')[0].text_content().encode('utf-8').strip()
+    av_tournament = item.xpath('./td[4]')[0].text_content().encode('utf-8').strip()
+    av_match = item.xpath('./td[5]')[0].text_content().encode('utf-8').strip()
     av_langs = '' 
     urls = []
     for t1 in item.xpath('./td[6]'):
@@ -201,8 +214,8 @@ def build_arenavision_list0(title):
 def build_arenavision_list1(title, urls):
   xbmcplugin.setPluginCategory(_handle, title)
 
-  listitem = xbmcgui.ListItem(label='Refresh List')
-  listitem.setInfo('video', {'title': 'Refresh List', 'mediatype': 'video'})
+  listitem = xbmcgui.ListItem(label=' Refresh List')
+  listitem.setInfo('video', {'title': ' Refresh List', 'mediatype': 'video'})
   data = {
       "provider": "arenavision",
       "action": "list1",
@@ -214,7 +227,7 @@ def build_arenavision_list1(title, urls):
   pattern = re.compile(r'acestream:\/\/([0-z]{40})', re.IGNORECASE)
   for r in urls:
     t = r.split('!')
-    page = requests.get(t[1], cookies={'Cookie': 'beget=begetok; expires=' + ('{:%a, %d %b %Y %H:%M:%S GMT}'.format(datetime.utcnow() + timedelta(seconds=19360000))) + '; path=/'}, headers=headers).content
+    page = requests.get(t[1], cookies={'Cookie': 'beget=begetok; expires=' + ('{:%a, %d %b %Y %H:%M:%S GMT}'.format(datetime.utcnow() + timedelta(seconds=19360000))) + '; path=/'}, headers=headers_mobile).content
     for m in re.finditer(pattern, page):
       listitem = xbmcgui.ListItem(label=t[0])
       listitem.setInfo('video', {'title': t[0], 'mediatype': 'video'})
@@ -228,11 +241,102 @@ def build_arenavision_list1(title, urls):
 
 
 
+def build_livetvsx_list0(title):
+  xbmcplugin.setPluginCategory(_handle, title)
+
+  listitem = xbmcgui.ListItem(label=' Refresh list')
+  listitem.setInfo('video', {'title': ' Refresh list', 'mediatype': 'video'})
+  data = {
+      "provider": "livetvsx",
+      "action": "list0",
+      "title": "LiveTV.sx"
+      }
+  xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=True)
+
+  page = requests.get('http://livetv.sx/enx/allupcoming/', headers=headers_desktop).content
+  tree = html.fromstring(page)
+
+  for item in tree.xpath('//div[@id="aul"]//a[@class="main"]'):
+    title = item.text_content().encode('utf-8').strip()
+    if title != '':
+      url = item.get('href').encode('utf-8').strip()
+      listitem = xbmcgui.ListItem(label=title)
+      listitem.setInfo('video', {'title': title, 'mediatype': 'video'})
+      data = {
+          "provider": "livetvsx",
+          "action": "list1",
+          "title" : title,
+          "url" : 'http://livetv.sx{0}'.format(url)
+          }
+      xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=True)
+  xbmcplugin.addSortMethod(_handle, xbmcplugin.SORT_METHOD_LABEL)
+  xbmcplugin.endOfDirectory(_handle)
+
+def build_livetvsx_list1(title, url):
+  xbmcplugin.setPluginCategory(_handle, title)
+
+  listitem = xbmcgui.ListItem(label=' Refresh List')
+  listitem.setInfo('video', {'title': ' Refresh List', 'mediatype': 'video'})
+  data = {
+      "provider": "livetvsx",
+      "action": "list1",
+      "title" : title,
+      "url" : url
+      }
+  xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=True)
+
+  page = requests.get(url, headers=headers_desktop).content
+  tree = html.fromstring(page)
+
+  for item in tree.xpath('//a[@class="live"]'):
+    title = item.text_content().encode('utf-8').strip()
+    if title != '':
+      url = item.get('href').encode('utf-8').strip()
+      listitem = xbmcgui.ListItem(label=title)
+      listitem.setInfo('video', {'title': title, 'mediatype': 'video'})
+      data = {
+          "provider": "livetvsx",
+          "action": "list2",
+          "title" : title,
+          "url" : 'http://livetv.sx{0}'.format(url)
+          }
+      xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=True)
+  xbmcplugin.addSortMethod(_handle, xbmcplugin.SORT_METHOD_LABEL)
+  xbmcplugin.endOfDirectory(_handle)
+
+def build_livetvsx_list2(title, url):
+  xbmcplugin.setPluginCategory(_handle, title)
+
+  listitem = xbmcgui.ListItem(label=' Refresh List')
+  listitem.setInfo('video', {'title': ' Refresh List', 'mediatype': 'video'})
+  data = {
+      "provider": "livetvsx",
+      "action": "list2",
+      "title" : title,
+      "url" : url
+      }
+  xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=True)
+
+  pattern = re.compile(r'acestream:\/\/([0-z]{40})', re.IGNORECASE)
+  page = requests.get(url, headers=headers_desktop).content
+  for m in re.finditer(pattern, page):
+    listitem = xbmcgui.ListItem(label=title)
+    listitem.setInfo('video', {'title': title, 'mediatype': 'video'})
+    listitem.setProperty('IsPlayable', 'true')
+    data = {
+        "action": "play",
+        "video" : 'http://{0}:{1}/ace/manifest.m3u8?id={2}'.format(addon.getSetting('ace_host'), addon.getSetting('ace_port'), m.group(1))
+        }
+    xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=False)
+  xbmcplugin.endOfDirectory(_handle)
+
+
+
 def build_platinsport_list0(title):
   xbmcplugin.setPluginCategory(_handle, title)
 
-  listitem = xbmcgui.ListItem(label='Refresh list')
-  listitem.setInfo('video', {'title': 'Refresh list', 'mediatype': 'video'})
+  listitem = xbmcgui.ListItem(label=' Refresh list')
+  listitem.setInfo('video', {'title': ' Refresh list', 'mediatype': 'video'})
   data = {
       "provider": "platinsport",
       "action": "list0",
@@ -240,13 +344,13 @@ def build_platinsport_list0(title):
       }
   xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=True)
 
-  page = requests.get('http://www.platinsport.com/', headers=headers).content
+  page = requests.get('http://www.platinsport.com/', headers=headers_mobile).content
   tree = html.fromstring(page)
 
   for item in tree.xpath('//article[@class="item-list"]'):
-    date = item.xpath('./h2[@class="post-box-title"]/a')[0].text.encode('utf-8').strip()
+    date = item.xpath('./h2[@class="post-box-title"]/a')[0].text_content().encode('utf-8').strip()
     for row in tree.xpath('.//tr'):
-      title = date[0:10] + ' ' + row.xpath('.//td[2]/strong')[0].text.encode('utf-8').strip()
+      title = date[0:10] + ' ' + row.xpath('.//td[2]')[0].text_content().encode('utf-8').strip()
       url = row.xpath('.//td[3]/a')[0].get('href').encode('utf-8').strip()
       listitem = xbmcgui.ListItem(label=title)
       listitem.setInfo('video', {'title': title, 'mediatype': 'video'})
@@ -262,8 +366,8 @@ def build_platinsport_list0(title):
 def build_platinsport_list1(title, url):
   xbmcplugin.setPluginCategory(_handle, title)
 
-  listitem = xbmcgui.ListItem(label='Refresh List')
-  listitem.setInfo('video', {'title': 'Refresh List', 'mediatype': 'video'})
+  listitem = xbmcgui.ListItem(label=' Refresh List')
+  listitem.setInfo('video', {'title': ' Refresh List', 'mediatype': 'video'})
   data = {
       "provider": "platinsport",
       "action": "list1",
@@ -273,7 +377,7 @@ def build_platinsport_list1(title, url):
   xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=True)
 
   pattern = re.compile(r'acestream:\/\/([0-z]{40})', re.IGNORECASE)
-  page = requests.get(url, headers=headers).content
+  page = requests.get(url, headers=headers_mobile).content
   for m in re.finditer(pattern, page):
     listitem = xbmcgui.ListItem(label=title)
     listitem.setInfo('video', {'title': title, 'mediatype': 'video'})
@@ -300,8 +404,8 @@ def build_reddit_list0(title, subs):
 def build_reddit_list1(title, sub, sep):
   xbmcplugin.setPluginCategory(_handle, title)
 
-  listitem = xbmcgui.ListItem(label='Refresh List')
-  listitem.setInfo('video', {'title': 'Refresh List', 'mediatype': 'video'})
+  listitem = xbmcgui.ListItem(label=' Refresh List')
+  listitem.setInfo('video', {'title': ' Refresh List', 'mediatype': 'video'})
   data = {
       "provider": "reddit",
       "action": "list1",
@@ -313,7 +417,7 @@ def build_reddit_list1(title, sub, sep):
 
   plus = ""
   while True:
-    page = requests.get('https://www.reddit.com/r/{0}.json{1}'.format(sub, plus), headers=headers).content
+    page = requests.get('https://www.reddit.com/r/{0}.json{1}'.format(sub, plus), headers=headers_mobile).content
     js = json.loads(page)
     for t3 in js["data"]["children"]:
       title = t3["data"]["title"].encode('utf-8').strip()
@@ -352,8 +456,8 @@ def findAllData(js, ks):
 def build_reddit_list2(title, url):
   xbmcplugin.setPluginCategory(_handle, title)
 
-  listitem = xbmcgui.ListItem(label='Refresh List')
-  listitem.setInfo('video', {'title': 'Refresh List', 'mediatype': 'video'})
+  listitem = xbmcgui.ListItem(label=' Refresh List')
+  listitem.setInfo('video', {'title': ' Refresh List', 'mediatype': 'video'})
   data = {
       "provider": "reddit",
       "action": "list2",
@@ -365,7 +469,7 @@ def build_reddit_list2(title, url):
   pattern = re.compile(r'((?:\[[^\[\]]+\]\s+)*)acestream:\/\/([0-z]{40})((?:\s+\[[^\[\]]+\])*)', re.IGNORECASE)
   plus = ""
   while True:
-    page = requests.get(url[:-1] + ".json" + plus, headers=headers).content
+    page = requests.get(url[:-1] + ".json" + plus, headers=headers_mobile).content
     js = json.loads(page)
     arr = findAllData(js, "data")
     for t3 in arr:
@@ -416,6 +520,14 @@ def router(paramstring):
           xbmc.log("type error: " + str(e), xbmc.LOGERROR)
       elif params['action'] == 'list1':
         build_arenavision_list1(params['title'], params['url'])
+
+    elif params['provider'] == 'livetvsx':
+      if params['action'] == 'list0':
+        build_livetvsx_list0(params['title'])
+      elif params['action'] == 'list1':
+        build_livetvsx_list1(params['title'], params['url'])
+      elif params['action'] == 'list2':
+        build_livetvsx_list2(params['title'], params['url'])
 
     elif params['provider'] == 'platinsport':
       if params['action'] == 'list0':

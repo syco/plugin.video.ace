@@ -4,11 +4,12 @@
   <string id="30102">Port for the acestream application</string>
   <string id="30200">Enable / Disable providers</string>
   <string id="30201">Load arenavision links</string>
-  <string id="30202">Load platinsport links</string>
-  <string id="30203">Load reddit boxing links</string>
-  <string id="30204">Load reddit mma links</string>
-  <string id="30205">Load reddit motorsports links</string>
-  <string id="30206">Load reddit nba links</string>
-  <string id="30207">Load reddit nfl links</string>
-  <string id="30208">Load reddit soccer links</string>
+  <string id="30202">Load livetv.sx links</string>
+  <string id="30203">Load platinsport links</string>
+  <string id="30204">Load reddit boxing links</string>
+  <string id="30205">Load reddit mma links</string>
+  <string id="30206">Load reddit motorsports links</string>
+  <string id="30207">Load reddit nba links</string>
+  <string id="30208">Load reddit nfl links</string>
+  <string id="30209">Load reddit soccer links</string>
 </strings>
