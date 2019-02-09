@@ -27,6 +27,10 @@ def list_categories():
   xbmcplugin.setPluginCategory(_handle, 'ACE')
   xbmcplugin.setContent(_handle, 'videos')
 
+  listitem = xbmcgui.ListItem(label='Refresh List')
+  listitem.setInfo('video', {'title': 'Refresh List', 'mediatype': 'video'})
+  xbmcplugin.addDirectoryItem(handle=_handle, url=_pid, listitem=listitem, isFolder=True)
+
   if addon.getSetting('show_arenavision') == "true":
     listitem = xbmcgui.ListItem(label='Arenavision')
     listitem.setInfo('video', {'title': 'Arenavision', 'mediatype': 'video'})
@@ -139,6 +143,16 @@ def list_categories():
 
 def build_arenavision_list0(title):
   xbmcplugin.setPluginCategory(_handle, title)
+
+  listitem = xbmcgui.ListItem(label='Refresh List')
+  listitem.setInfo('video', {'title': 'Refresh List', 'mediatype': 'video'})
+  data = {
+      "provider": "arenavision",
+      "action": "list0",
+      "title": "Arenavision"
+      }
+  xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=True)
+
   today = '{:%d/%m/%Y}'.format(datetime.utcnow())
   tomorrow = '{:%d/%m/%Y}'.format(datetime.utcnow() + timedelta(days=1))
   page = requests.get('http://arenavision.in/guide', cookies={'Cookie': 'beget=begetok; expires=' + ('{:%a, %d %b %Y %H:%M:%S GMT}'.format(datetime.utcnow() + timedelta(seconds=19360000))) + '; path=/'}, headers=headers).content
@@ -179,6 +193,17 @@ def build_arenavision_list0(title):
 
 def build_arenavision_list1(title, urls):
   xbmcplugin.setPluginCategory(_handle, title)
+
+  listitem = xbmcgui.ListItem(label='Refresh List')
+  listitem.setInfo('video', {'title': 'Refresh List', 'mediatype': 'video'})
+  data = {
+      "provider": "arenavision",
+      "action": "list1",
+      "title" : title,
+      "url" : urls
+      }
+  xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=True)
+
   pattern = re.compile(r'acestream:\/\/([0-z]{40})', re.IGNORECASE)
   for r in urls:
     t = r.split('!')
@@ -198,6 +223,16 @@ def build_arenavision_list1(title, urls):
 
 def build_platinsport_list0(title):
   xbmcplugin.setPluginCategory(_handle, title)
+
+  listitem = xbmcgui.ListItem(label='Refresh list')
+  listitem.setInfo('video', {'title': 'Refresh list', 'mediatype': 'video'})
+  data = {
+      "provider": "platinsport",
+      "action": "list0",
+      "title": "PlatinSport"
+      }
+  xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=True)
+
   page = requests.get('http://www.platinsport.com/', headers=headers).content
   tree = html.fromstring(page)
 
@@ -219,6 +254,17 @@ def build_platinsport_list0(title):
 
 def build_platinsport_list1(title, url):
   xbmcplugin.setPluginCategory(_handle, title)
+
+  listitem = xbmcgui.ListItem(label='Refresh List')
+  listitem.setInfo('video', {'title': 'Refresh List', 'mediatype': 'video'})
+  data = {
+      "provider": "platinsport",
+      "action": "list1",
+      "title" : title,
+      "url" : url
+      }
+  xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=True)
+
   pattern = re.compile(r'acestream:\/\/([0-z]{40})', re.IGNORECASE)
   page = requests.get(url, headers=headers).content
   for m in re.finditer(pattern, page):
@@ -246,6 +292,18 @@ def build_reddit_list0(title, subs):
 
 def build_reddit_list1(title, sub, sep):
   xbmcplugin.setPluginCategory(_handle, title)
+
+  listitem = xbmcgui.ListItem(label='Refresh List')
+  listitem.setInfo('video', {'title': 'Refresh List', 'mediatype': 'video'})
+  data = {
+      "provider": "reddit",
+      "action": "list1",
+      "title": title,
+      "sub": sub,
+      "sep": sep
+      }
+  xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=True)
+
   plus = ""
   while True:
     page = requests.get('https://www.reddit.com/r/{0}.json{1}'.format(sub, plus), headers=headers).content
@@ -286,6 +344,17 @@ def findAllData(js, ks):
 
 def build_reddit_list2(title, url):
   xbmcplugin.setPluginCategory(_handle, title)
+
+  listitem = xbmcgui.ListItem(label='Refresh List')
+  listitem.setInfo('video', {'title': 'Refresh List', 'mediatype': 'video'})
+  data = {
+      "provider": "reddit",
+      "action": "list2",
+      "title": title,
+      "url": url
+      }
+  xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=True)
+
   pattern = re.compile(r'((?:\[[^\[\]]+\]\s+)*)acestream:\/\/([0-z]{40})((?:\s+\[[^\[\]]+\])*)', re.IGNORECASE)
   plus = ""
   while True:
