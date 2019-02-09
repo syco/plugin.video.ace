@@ -15,7 +15,7 @@ A kodi plug-in that scrapes acestream links from the web and populate a list und
 * reddit.com/r/nflstreams
 * reddit.com/r/MMAStreams
 * reddit.com/r/motorsportsstreams
-* reddit.com/r/soccerstreams_other
+* reddit.com/r/redditsoccer
 
 ### Requirements ###
 In order to stream content you need acestream engine running on the same computer or on the same network, I personally start the engine with options "--log-stdout --client-console"
