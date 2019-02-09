@@ -114,26 +114,33 @@ def list_categories():
   if addon.getSetting('show_reddit_soccer') == "true":
     listitem = xbmcgui.ListItem(label='Reddit Soccer')
     listitem.setInfo('video', {'title': 'Reddit Soccer', 'mediatype': 'video'})
+    #data = {
+    #    "provider": "reddit",
+    #    "action": "list0",
+    #    "title": "Reddit Soccer",
+    #    "subs": [
+    #      {
+    #        "provider": "reddit",
+    #        "action": "list1",
+    #        "title": "/r/soccerstreams_other",
+    #        "sub": "soccerstreams_other",
+    #        "sep": " vs"
+    #        },
+    #      {
+    #        "provider": "reddit",
+    #        "action": "list1",
+    #        "title": "/r/soccerstreams_pl",
+    #        "sub": "soccerstreams_pl",
+    #        "sep": " vs"
+    #        }
+    #      ]
+    #    }
     data = {
         "provider": "reddit",
-        "action": "list0",
+        "action": "list1",
         "title": "Reddit Soccer",
-        "subs": [
-          {
-            "provider": "reddit",
-            "action": "list1",
-            "title": "/r/soccerstreams_other",
-            "sub": "soccerstreams_other",
-            "sep": " vs"
-            },
-          {
-            "provider": "reddit",
-            "action": "list1",
-            "title": "/r/soccerstreams_pl",
-            "sub": "soccerstreams_pl",
-            "sep": " vs"
-            }
-          ]
+        "sub": "redditsoccer",
+        "sep": " vs"
         }
     xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=True)
 
