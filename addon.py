@@ -256,7 +256,8 @@ def build_livetvsx_list0(title):
   page = requests.get('http://livetv.sx/enx/allupcoming/', headers=headers_desktop).content
   tree = html.fromstring(page)
 
-  for item in tree.xpath('//div[@id="aul"]//a[@class="main"]'):
+  for item in tree.xpath('//div[@id="aul"]//a[@class="main"][not(img)]'):
+    xbmc.log(html.tostring(item), xbmc.LOGNOTICE)
     title = item.text_content().encode('utf-8').strip()
     if title != '':
       url = item.get('href').encode('utf-8').strip()
@@ -288,10 +289,16 @@ def build_livetvsx_list1(title, url):
   page = requests.get(url, headers=headers_desktop).content
   tree = html.fromstring(page)
 
-  for item in tree.xpath('//a[@class="live"]'):
+  added = []
+
+  for item in tree.xpath('//img[@src="//cdn.livetvcdn.net/img/live.gif"]/parent::*/a'):
+    xbmc.log(html.tostring(item), xbmc.LOGNOTICE)
     title = item.text_content().encode('utf-8').strip()
     if title != '':
       url = item.get('href').encode('utf-8').strip()
+      if url in added:
+        continue
+      added.append(url)
       listitem = xbmcgui.ListItem(label=title)
       listitem.setInfo('video', {'title': title, 'mediatype': 'video'})
       data = {
@@ -321,18 +328,15 @@ def build_livetvsx_list2(title, url):
   tree = html.fromstring(page)
 
   for item in tree.xpath('//a[starts-with(@href, "acestream://")]/parent::*/parent::*'):
-    xbmc.log(item.xpath('./td[0]/img').get('title').encode('utf-8').strip(), xbmc.LOGNOTICE)
-
-
-  pattern = re.compile(r'acestream:\/\/([0-z]{40})', re.IGNORECASE)
-  page = requests.get(url, headers=headers_desktop).content
-  for m in re.finditer(pattern, page):
-    listitem = xbmcgui.ListItem(label=title)
-    listitem.setInfo('video', {'title': title, 'mediatype': 'video'})
+    ptitle = item.xpath('./td/img')[0].get('title').encode('utf-8').strip()
+    purl = item.xpath('./td[7]/a')[0].get('href').encode('utf-8').strip()
+    xbmc.log(purl, xbmc.LOGNOTICE)
+    listitem = xbmcgui.ListItem(label=ptitle)
+    listitem.setInfo('video', {'title': ptitle, 'mediatype': 'video'})
     listitem.setProperty('IsPlayable', 'true')
     data = {
         "action": "play",
-        "video" : 'http://{0}:{1}/ace/manifest.m3u8?id={2}'.format(addon.getSetting('ace_host'), addon.getSetting('ace_port'), m.group(1))
+        "video" : 'http://{0}:{1}/ace/manifest.m3u8?id={2}'.format(addon.getSetting('ace_host'), addon.getSetting('ace_port'), purl)
         }
     xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=False)
   xbmcplugin.endOfDirectory(_handle)
