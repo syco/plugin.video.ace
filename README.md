@@ -9,6 +9,7 @@ A kodi plug-in that scrapes acestream links from the web and populate a list und
 
 ### Supported websites and reddit threads: ###
 * arenavision.us
+* livetv.sx
 * platinsport.com
 * reddit.com/r/boxingstreams
 * reddit.com/r/nbastreams

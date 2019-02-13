@@ -317,6 +317,13 @@ def build_livetvsx_list2(title, url):
       }
   xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=True)
 
+  page = requests.get(url, headers=headers_desktop).content
+  tree = html.fromstring(page)
+
+  for item in tree.xpath('//a[starts-with(@href, "acestream://")]/parent::*/parent::*'):
+    xbmc.log(item.xpath('./td[0]/img').get('title').encode('utf-8').strip(), xbmc.LOGNOTICE)
+
+
   pattern = re.compile(r'acestream:\/\/([0-z]{40})', re.IGNORECASE)
   page = requests.get(url, headers=headers_desktop).content
   for m in re.finditer(pattern, page):
