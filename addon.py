@@ -180,34 +180,38 @@ def build_arenavision_list0(title):
   pattern = re.compile(r'([0-9-]+)\W*([A-Z]+)', re.IGNORECASE)
 
   for item in tree.xpath('//tr[count(./td)>=6]'):
-    av_date = item.xpath('./td[1]')[0].text_content().encode('utf-8').strip()
-    if today != av_date and tomorrow !=av_date:
-      continue
-    av_time = item.xpath('./td[2]')[0].text_content().encode('utf-8').strip()
-    av_sport = item.xpath('./td[3]')[0].text_content().encode('utf-8').strip()
-    av_tournament = item.xpath('./td[4]')[0].text_content().encode('utf-8').strip()
-    av_match = item.xpath('./td[5]')[0].text_content().encode('utf-8').strip()
-    av_langs = '' 
-    urls = []
-    for t1 in item.xpath('./td[6]'):
-      m = re.match(pattern, t1.text)
-      av_langs = av_langs + ' ' + m.group(2)
-      for c in m.group(1).split('-'):
-        c = c.strip()
-        if c[0] == 'W':
-          urls.append(m.group(2) + ' ' + c + '!' + (tree.xpath('//a[text()="World Cup ' + c[1:] + '"]')[0]).get('href'))
-        else:
-          urls.append(m.group(2) + ' ' + c + '!' + (tree.xpath('//a[text()="ArenaVision ' + c + '"]')[0]).get('href'))
-    title = av_date + ' ' + av_time + ' | ' + av_sport + ' | ' + av_tournament + ' | ' + av_match + ' |' + av_langs
-    listitem = xbmcgui.ListItem(label=title)
-    listitem.setInfo('video', {'title': title, 'mediatype': 'video'})
-    data = {
-        "provider": "arenavision",
-        "action": "list1",
-        "title" : title,
-        "url" : urls
-        }
-    xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=True)
+    try:
+      av_date = item.xpath('./td[1]')[0].text_content().encode('utf-8').strip()
+      if today != av_date and tomorrow !=av_date:
+        continue
+      av_time = item.xpath('./td[2]')[0].text_content().encode('utf-8').strip()
+      av_sport = item.xpath('./td[3]')[0].text_content().encode('utf-8').strip()
+      av_tournament = item.xpath('./td[4]')[0].text_content().encode('utf-8').strip()
+      av_match = item.xpath('./td[5]')[0].text_content().encode('utf-8').strip()
+      av_langs = '' 
+      urls = []
+      for t1 in item.xpath('./td[6]'):
+        m = re.match(pattern, t1.text)
+        av_langs = av_langs + ' ' + m.group(2)
+        for c in m.group(1).split('-'):
+          c = c.strip()
+          if c[0] == 'W':
+            urls.append(m.group(2) + ' ' + c + '!' + (tree.xpath('//a[text()="World Cup ' + c[1:] + '"]')[0]).get('href'))
+          else:
+            urls.append(m.group(2) + ' ' + c + '!' + (tree.xpath('//a[text()="ArenaVision ' + c + '"]')[0]).get('href'))
+      title = av_date + ' ' + av_time + ' | ' + av_sport + ' | ' + av_tournament + ' | ' + av_match + ' |' + av_langs
+      listitem = xbmcgui.ListItem(label=title)
+      listitem.setInfo('video', {'title': title, 'mediatype': 'video'})
+      data = {
+          "provider": "arenavision",
+          "action": "list1",
+          "title" : title,
+          "url" : urls
+          }
+      xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=True)
+    except Exception as ex:
+      xbmc.log('ERROR: {}'.format(html.tostring(item)), xbmc.LOGERROR)
+      xbmc.log('ERROR: {}'.format(str(ex)), xbmc.LOGERROR)
 
   xbmcplugin.endOfDirectory(_handle)
 
@@ -257,19 +261,23 @@ def build_livetvsx_list0(title):
   tree = html.fromstring(page)
 
   for item in tree.xpath('//div[@id="aul"]//a[@class="main"][not(img)]'):
-    xbmc.log(html.tostring(item), xbmc.LOGNOTICE)
-    title = item.text_content().encode('utf-8').strip()
-    if title != '':
-      url = item.get('href').encode('utf-8').strip()
-      listitem = xbmcgui.ListItem(label=title)
-      listitem.setInfo('video', {'title': title, 'mediatype': 'video'})
-      data = {
-          "provider": "livetvsx",
-          "action": "list1",
-          "title" : title,
-          "url" : 'http://livetv.sx{0}'.format(url)
-          }
-      xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=True)
+    try:
+      xbmc.log(html.tostring(item), xbmc.LOGNOTICE)
+      title = item.text_content().encode('utf-8').strip()
+      if title != '':
+        url = item.get('href').encode('utf-8').strip()
+        listitem = xbmcgui.ListItem(label=title)
+        listitem.setInfo('video', {'title': title, 'mediatype': 'video'})
+        data = {
+            "provider": "livetvsx",
+            "action": "list1",
+            "title" : title,
+            "url" : 'http://livetv.sx{0}'.format(url)
+            }
+        xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=True)
+    except Exception as ex:
+      xbmc.log('ERROR: {}'.format(html.tostring(item)), xbmc.LOGERROR)
+      xbmc.log('ERROR: {}'.format(str(ex)), xbmc.LOGERROR)
   xbmcplugin.addSortMethod(_handle, xbmcplugin.SORT_METHOD_LABEL)
   xbmcplugin.endOfDirectory(_handle)
 
@@ -292,22 +300,26 @@ def build_livetvsx_list1(title, url):
   added = []
 
   for item in tree.xpath('//img[@src="//cdn.livetvcdn.net/img/live.gif"]/parent::*/a'):
-    xbmc.log(html.tostring(item), xbmc.LOGNOTICE)
-    title = item.text_content().encode('utf-8').strip()
-    if title != '':
-      url = item.get('href').encode('utf-8').strip()
-      if url in added:
-        continue
-      added.append(url)
-      listitem = xbmcgui.ListItem(label=title)
-      listitem.setInfo('video', {'title': title, 'mediatype': 'video'})
-      data = {
-          "provider": "livetvsx",
-          "action": "list2",
-          "title" : title,
-          "url" : 'http://livetv.sx{0}'.format(url)
-          }
-      xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=True)
+    try:
+      xbmc.log(html.tostring(item), xbmc.LOGNOTICE)
+      title = item.text_content().encode('utf-8').strip()
+      if title != '':
+        url = item.get('href').encode('utf-8').strip()
+        if url in added:
+          continue
+        added.append(url)
+        listitem = xbmcgui.ListItem(label=title)
+        listitem.setInfo('video', {'title': title, 'mediatype': 'video'})
+        data = {
+            "provider": "livetvsx",
+            "action": "list2",
+            "title" : title,
+            "url" : 'http://livetv.sx{0}'.format(url)
+            }
+        xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=True)
+    except Exception as ex:
+      xbmc.log('ERROR: {}'.format(html.tostring(item)), xbmc.LOGERROR)
+      xbmc.log('ERROR: {}'.format(str(ex)), xbmc.LOGERROR)
   xbmcplugin.addSortMethod(_handle, xbmcplugin.SORT_METHOD_LABEL)
   xbmcplugin.endOfDirectory(_handle)
 
@@ -328,17 +340,21 @@ def build_livetvsx_list2(title, url):
   tree = html.fromstring(page)
 
   for item in tree.xpath('//a[starts-with(@href, "acestream://")]/parent::*/parent::*'):
-    ptitle = item.xpath('./td/img')[0].get('title').encode('utf-8').strip()
-    purl = item.xpath('./td[7]/a')[0].get('href').encode('utf-8').strip()
-    xbmc.log(purl, xbmc.LOGNOTICE)
-    listitem = xbmcgui.ListItem(label=ptitle)
-    listitem.setInfo('video', {'title': ptitle, 'mediatype': 'video'})
-    listitem.setProperty('IsPlayable', 'true')
-    data = {
-        "action": "play",
-        "video" : 'http://{0}:{1}/ace/manifest.m3u8?id={2}'.format(addon.getSetting('ace_host'), addon.getSetting('ace_port'), purl)
-        }
-    xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=False)
+    try:
+      ptitle = item.xpath('./td/img')[0].get('title').encode('utf-8').strip()
+      purl = item.xpath('./td[7]/a')[0].get('href').encode('utf-8').strip()
+      xbmc.log(purl, xbmc.LOGNOTICE)
+      listitem = xbmcgui.ListItem(label=ptitle)
+      listitem.setInfo('video', {'title': ptitle, 'mediatype': 'video'})
+      listitem.setProperty('IsPlayable', 'true')
+      data = {
+          "action": "play",
+          "video" : 'http://{0}:{1}/ace/manifest.m3u8?id={2}'.format(addon.getSetting('ace_host'), addon.getSetting('ace_port'), purl)
+          }
+      xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=False)
+    except Exception as ex:
+      xbmc.log('ERROR: {}'.format(html.tostring(item)), xbmc.LOGERROR)
+      xbmc.log('ERROR: {}'.format(str(ex)), xbmc.LOGERROR)
   xbmcplugin.endOfDirectory(_handle)
 
 
@@ -359,19 +375,23 @@ def build_platinsport_list0(title):
   tree = html.fromstring(page)
 
   for item in tree.xpath('//article[@class="item-list"]'):
-    date = item.xpath('./h2[@class="post-box-title"]/a')[0].text_content().encode('utf-8').strip()
-    for row in tree.xpath('.//tr'):
-      title = date[0:10] + ' ' + row.xpath('.//td[2]')[0].text_content().encode('utf-8').strip()
-      url = row.xpath('.//td[3]/a')[0].get('href').encode('utf-8').strip()
-      listitem = xbmcgui.ListItem(label=title)
-      listitem.setInfo('video', {'title': title, 'mediatype': 'video'})
-      data = {
-          "provider": "platinsport",
-          "action": "list1",
-          "title" : title,
-          "url" : url[20:]
-          }
-      xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=True)
+    try:
+      date = item.xpath('./h2[@class="post-box-title"]/a')[0].text_content().encode('utf-8').strip()
+      for row in tree.xpath('.//tr'):
+        title = date[0:10] + ' ' + row.xpath('.//td[2]')[0].text_content().encode('utf-8').strip()
+        url = row.xpath('.//td[3]/a')[0].get('href').encode('utf-8').strip()
+        listitem = xbmcgui.ListItem(label=title)
+        listitem.setInfo('video', {'title': title, 'mediatype': 'video'})
+        data = {
+            "provider": "platinsport",
+            "action": "list1",
+            "title" : title,
+            "url" : url[20:]
+            }
+        xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=True)
+    except Exception as ex:
+      xbmc.log('ERROR: {}'.format(html.tostring(item)), xbmc.LOGERROR)
+      xbmc.log('ERROR: {}'.format(str(ex)), xbmc.LOGERROR)
   xbmcplugin.endOfDirectory(_handle)
 
 def build_platinsport_list1(title, url):
