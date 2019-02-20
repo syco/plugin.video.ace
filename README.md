@@ -8,6 +8,7 @@ A kodi plug-in that scrapes acestream links from the web and populate a list und
 - python-lxml
 
 ### Supported websites and reddit threads: ###
+* livefootballol.me
 * arenavision.in
 * livetv.sx
 * platinsport.com
