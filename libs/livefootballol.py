@@ -31,27 +31,65 @@ def build_list0(_pid, _handle, addon, title):
       }
   xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=True)
 
-  page = requests.get('https://www.livefootballol.me/acestream-channel-list-2017.html', headers=headers_desktop).content
-  tree = html.fromstring(page)
+  pages = ['https://www.livefootballol.me/channels/']
+  for i in range(2, 10):
+    pages.append("https://www.livefootballol.me/channels/page-{}.html".format(i))
+  for purl in pages:
+    page = requests.get(purl, headers=headers_desktop).content
+    #xbmc.log(page, xbmc.LOGNOTICE)
+    tree = html.fromstring(page)
 
-  for item in tree.xpath('//table[@class="uk-table uk-table-hover uk-table-striped"]/tr'):
-    try:
-      lf_title = item.xpath('./td[2]')[0].text_content().encode('utf-8').strip()
-      lf_link = item.xpath('./td[3]')[0].text_content().encode('utf-8').strip()
-      lf_lang = item.xpath('./td[4]')[0].text_content().encode('utf-8').strip()
-      lf_kbps = item.xpath('./td[5]')[0].text_content().encode('utf-8').strip()
-
-      lf_title2 = lf_title + ' [' + lf_lang + ' ~ ' + lf_kbps + ']'
-      listitem = xbmcgui.ListItem(label=lf_title2)
-      listitem.setInfo('video', {'title': lf_title2, 'mediatype': 'video'})
-      listitem.setProperty('IsPlayable', 'true')
-      data = {
-          "action": "play",
-          "video" : 'http://{0}:{1}/ace/manifest.m3u8?id={2}'.format(addon.getSetting('ace_host'), addon.getSetting('ace_port'), lf_link)
-          }
-      xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=False)
-    except Exception as ex:
-      xbmc.log('ERROR: {}'.format(html.tostring(item)), xbmc.LOGERROR)
-      xbmc.log('ERROR: {}'.format(str(ex)), xbmc.LOGERROR)
+    for item in tree.xpath('//table[@class="uk-table uk-table-striped"]/*/tr/td/a'):
+      try:
+        lf_title = item.text_content().encode('utf-8').strip()
+        lf_link = "https://www.livefootballol.me{}".format(item.get('href').encode('utf-8').strip())
+        #xbmc.log(lf_title + " - " + lf_link, xbmc.LOGNOTICE)
+        listitem = xbmcgui.ListItem(label=lf_title)
+        listitem.setInfo('video', {'title': lf_title, 'mediatype': 'video'})
+        data = {
+            "provider": "livefootballol",
+            "action": "list1",
+            "title" : lf_title,
+            "url" : lf_link
+            }
+        xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=True)
+      except Exception as ex:
+        xbmc.log('ERROR: {}'.format(html.tostring(item)), xbmc.LOGERROR)
+        xbmc.log('ERROR: {}'.format(str(ex)), xbmc.LOGERROR)
+        break
   xbmcplugin.endOfDirectory(_handle)
 
+def build_list1(_pid, _handle, addon, title, url):
+  xbmcplugin.setPluginCategory(_handle, title)
+
+  xbmc.log(url, xbmc.LOGNOTICE)
+  pattern = re.compile(r'acestream:\/\/([0-z]{40})', re.IGNORECASE)
+  page = requests.get(url, headers=headers_desktop).content
+  tree = html.fromstring(page)
+
+  items = tree.xpath('//table[@class="uk-table"]/*/tr/td');
+
+  lf_title = items[2].text_content().encode('utf-8').strip()
+  lf_brate = items[4].text_content().encode('utf-8').strip()
+  lf_lang = items[8].text_content().encode('utf-8').strip()
+
+  lf_title2 = lf_title + " [" + lf_lang + " @ " + lf_brate + "]"
+
+  added = []
+
+  for m in re.finditer(pattern, page):
+    a_url = m.group(1)
+    if a_url in added:
+      continue
+    added.append(a_url)
+    xbmc.log(a_url, xbmc.LOGNOTICE)
+    listitem = xbmcgui.ListItem(label=lf_title2)
+    listitem.setInfo('video', {'title': lf_title2, 'mediatype': 'video'})
+    listitem.setProperty('IsPlayable', 'true')
+    data = {
+        "action": "play",
+        "video" : 'http://{0}:{1}/ace/manifest.m3u8?id={2}'.format(addon.getSetting('ace_host'), addon.getSetting('ace_port'), a_url)
+        }
+    xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=False)
+
+  xbmcplugin.endOfDirectory(_handle)

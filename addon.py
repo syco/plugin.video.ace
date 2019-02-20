@@ -209,6 +209,8 @@ def router(paramstring):
           arenavision.build_list0(_pid, _handle, addon, params['title'])
         except Exception as e:
           xbmc.log("type error: " + str(e), xbmc.LOGERROR)
+      elif params['action'] == 'list1':
+        arenavision.build_list1(_pid, _handle, addon, params['title'], params['url'])
 
     elif params['provider'] == 'livetvsx':
       if params['action'] == 'list0':
