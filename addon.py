@@ -175,7 +175,7 @@ def build_arenavision_list0(title):
 
   today = '{:%d/%m/%Y}'.format(datetime.utcnow())
   tomorrow = '{:%d/%m/%Y}'.format(datetime.utcnow() + timedelta(days=1))
-  page = requests.get('http://arenavision.us/guide', cookies={'Cookie': 'beget=begetok; expires=' + ('{:%a, %d %b %Y %H:%M:%S GMT}'.format(datetime.utcnow() + timedelta(seconds=19360000))) + '; path=/'}, headers=headers_mobile).content
+  page = requests.get('http://arenavision.in/guide', cookies={'Cookie': 'beget=begetok; expires=' + ('{:%a, %d %b %Y %H:%M:%S GMT}'.format(datetime.utcnow() + timedelta(seconds=19360000))) + '; path=/'}, headers=headers_mobile).content
   tree = html.fromstring(page)
   pattern = re.compile(r'([0-9-]+)\W*([A-Z]+)', re.IGNORECASE)
 
