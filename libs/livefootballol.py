@@ -37,6 +37,22 @@ def build_list0(_pid, _handle, addon, title):
 
       for item in tree.xpath('//table[@class="uk-table uk-table-striped"]/*/tr/td/a'):
         lf_title = item.text_content().encode('utf-8').strip()
+        if "bulgaria" in lf_title.lower():
+          continue
+        if "czech" in lf_title.lower():
+          continue
+        if "germany" in lf_title.lower():
+          continue
+        if "hungary" in lf_title.lower():
+          continue
+        if "jazeera" in lf_title.lower():
+          continue
+        if "russia" in lf_title.lower():
+          continue
+        if "serbia" in lf_title.lower():
+          continue
+        if "sopcast" in lf_title.lower():
+          continue
         xbmc.log(lf_title, xbmc.LOGNOTICE)
         lf_link = "https://www.livefootballol.me" + item.get('href').encode('utf-8').strip()
         xbmc.log(lf_link, xbmc.LOGNOTICE)
@@ -53,6 +69,7 @@ def build_list0(_pid, _handle, addon, title):
   except Exception as ex:
     xbmc.log(html.tostring(item), xbmc.LOGERROR)
     xbmc.log(str(ex), xbmc.LOGERROR)
+  xbmcplugin.addSortMethod(_handle, xbmcplugin.SORT_METHOD_LABEL)
   xbmcplugin.endOfDirectory(_handle)
 
 def build_list1(_pid, _handle, addon, title, url):
@@ -87,5 +104,5 @@ def build_list1(_pid, _handle, addon, title, url):
         "video" : 'http://{0}:{1}/ace/manifest.m3u8?id={2}'.format(addon.getSetting('ace_host'), addon.getSetting('ace_port'), a_url)
         }
     xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=False)
-
+  xbmcplugin.addSortMethod(_handle, xbmcplugin.SORT_METHOD_LABEL)
   xbmcplugin.endOfDirectory(_handle)
