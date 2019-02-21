@@ -5,15 +5,9 @@
     <setting label="30102" type="number" id="ace_port" default="6878"/>
   </category>
   <category label="30200">
-    <setting label="30201" type="bool" id="show_livefootballol" default="true"/>
-    <setting label="30202" type="bool" id="show_arenavision" default="true"/>
+    <setting label="30201" type="bool" id="show_arenavision" default="true"/>
+    <setting label="30202" type="bool" id="show_livefootballol" default="true"/>
     <setting label="30203" type="bool" id="show_livetvsx" default="true"/>
     <setting label="30204" type="bool" id="show_platinsport" default="true"/>
-    <setting label="30205" type="bool" id="show_reddit_boxing" default="true"/>
-    <setting label="30206" type="bool" id="show_reddit_mma" default="true"/>
-    <setting label="30207" type="bool" id="show_reddit_motorsports" default="true"/>
-    <setting label="30208" type="bool" id="show_reddit_nba" default="true"/>
-    <setting label="30209" type="bool" id="show_reddit_nfl" default="true"/>
-    <setting label="30210" type="bool" id="show_reddit_soccer" default="true"/>
   </category>
 </settings>

@@ -11,12 +11,7 @@ from lxml import html
 from urlparse import parse_qsl
 from datetime import datetime, timedelta
 
-headers_mobile = {
-    'User-Agent': 'Mozilla/5.0 (Linux; Android 5.0; SM-G900P Build/LRX21T) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.87 Mobile Safari/537.36'
-    }
-headers_desktop = {
-    'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:65.0) Gecko/20100101 Firefox/65.0'
-    }
+headers = {'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:65.0) Gecko/20100101 Firefox/65.0'}
 
 
 def build_list0(_pid, _handle, addon, title):
@@ -31,7 +26,7 @@ def build_list0(_pid, _handle, addon, title):
       }
   xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=True)
 
-  page = requests.get('http://livetv.sx/enx/allupcoming/', headers=headers_desktop).content
+  page = requests.get('http://livetv.sx/enx/allupcoming/', headers=headers).content
   tree = html.fromstring(page)
 
   for item in tree.xpath('//div[@id="aul"]//a[@class="main"][not(img)]'):
@@ -68,7 +63,7 @@ def build_list1(_pid, _handle, addon, title, url):
       }
   xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=True)
 
-  page = requests.get(url, headers=headers_desktop).content
+  page = requests.get(url, headers=headers).content
   tree = html.fromstring(page)
 
   added = []
@@ -110,7 +105,7 @@ def build_list2(_pid, _handle, addon, title, url):
       }
   xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=True)
 
-  page = requests.get(url, headers=headers_desktop).content
+  page = requests.get(url, headers=headers).content
   tree = html.fromstring(page)
 
   for item in tree.xpath('//a[starts-with(@href, "acestream://")]/parent::*/parent::*'):

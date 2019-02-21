@@ -15,7 +15,6 @@ from libs import livefootballol
 from libs import arenavision
 from libs import livetvsx
 from libs import platinsport
-from libs import reddit
 
 # https://forum.kodi.tv/showthread.php?tid=324570
 
@@ -80,99 +79,6 @@ def list_categories():
         }
     xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=True)
 
-  #if addon.getSetting('show_reddit_boxing') == "true":
-  #  listitem = xbmcgui.ListItem(label='Reddit Boxing')
-  #  listitem.setInfo('video', {'title': 'Reddit Boxing', 'mediatype': 'video'})
-  #  data = {
-  #      "provider": "reddit",
-  #      "action": "list1",
-  #      "title": "Reddit Boxing",
-  #      "sub": "boxingstreams",
-  #      "sep": " vs"
-  #      }
-  #  xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=True)
-
-  #if addon.getSetting('show_reddit_mma') == "true":
-  #  listitem = xbmcgui.ListItem(label='Reddit MMA')
-  #  listitem.setInfo('video', {'title': 'Reddit MMA', 'mediatype': 'video'})
-  #  data = {
-  #      "provider": "reddit",
-  #      "action": "list1",
-  #      "title": "Reddit MMA",
-  #      "sub": "MMAStreams",
-  #      "sep": " vs"
-  #      }
-  #  xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=True)
-
-  #if addon.getSetting('show_reddit_motorsports') == "true":
-  #  listitem = xbmcgui.ListItem(label='Reddit MotorSports')
-  #  listitem.setInfo('video', {'title': 'Reddit MotorSports', 'mediatype': 'video'})
-  #  data = {
-  #      "provider": "reddit",
-  #      "action": "list1",
-  #      "title": "Reddit MotorSports",
-  #      "sub": "motorsportsstreams",
-  #      "sep": " utc"
-  #      }
-  #  xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=True)
-
-  #if addon.getSetting('show_reddit_nba') == "true":
-  #  listitem = xbmcgui.ListItem(label='Reddit NBA')
-  #  listitem.setInfo('video', {'title': 'Reddit NBA', 'mediatype': 'video'})
-  #  data = {
-  #      "provider": "reddit",
-  #      "action": "list1",
-  #      "title": "Reddit NBA",
-  #      "sub": "nbastreams",
-  #      "sep": " @"
-  #      }
-  #  xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=True)
-
-  #if addon.getSetting('show_reddit_nfl') == "true":
-  #  listitem = xbmcgui.ListItem(label='Reddit NFL')
-  #  listitem.setInfo('video', {'title': 'Reddit NFL', 'mediatype': 'video'})
-  #  data = {
-  #      "provider": "reddit",
-  #      "action": "list1",
-  #      "title": "Reddit NFL",
-  #      "sub": "nflstreams",
-  #      "sep": " @"
-  #      }
-  #  xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=True)
-
-  #if addon.getSetting('show_reddit_soccer') == "true":
-  #  listitem = xbmcgui.ListItem(label='Reddit Soccer')
-  #  listitem.setInfo('video', {'title': 'Reddit Soccer', 'mediatype': 'video'})
-  #  #data = {
-  #  #    "provider": "reddit",
-  #  #    "action": "list0",
-  #  #    "title": "Reddit Soccer",
-  #  #    "subs": [
-  #  #      {
-  #  #        "provider": "reddit",
-  #  #        "action": "list1",
-  #  #        "title": "/r/soccerstreams_other",
-  #  #        "sub": "soccerstreams_other",
-  #  #        "sep": " vs"
-  #  #        },
-  #  #      {
-  #  #        "provider": "reddit",
-  #  #        "action": "list1",
-  #  #        "title": "/r/soccerstreams_pl",
-  #  #        "sub": "soccerstreams_pl",
-  #  #        "sep": " vs"
-  #  #        }
-  #  #      ]
-  #  #    }
-  #  data = {
-  #      "provider": "reddit",
-  #      "action": "list1",
-  #      "title": "Reddit Soccer",
-  #      "sub": "redditsoccer",
-  #      "sep": " vs"
-  #      }
-  #  xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=True)
-
   xbmcplugin.endOfDirectory(_handle)
 
 
@@ -226,13 +132,6 @@ def router(paramstring):
       elif params['action'] == 'list1':
         platinsport.build_list1(_pid, _handle, addon, params['title'], params['url'])
 
-    elif params['provider'] == 'reddit':
-      if params['action'] == 'list0':
-        reddit.build_list0(_pid, _handle, addon, params['title'], params['subs'])
-      elif params['action'] == 'list1':
-        reddit.build_list1(_pid, _handle, addon, params['title'], params['sub'], params['sep'])
-      elif params['action'] == 'list2':
-        reddit.build_list2(_pid, _handle, addon, params['title'], params['url'])
   else:
     list_categories()
 
