@@ -11,12 +11,7 @@ from lxml import html
 from urlparse import parse_qsl
 from datetime import datetime, timedelta
 
-headers_mobile = {
-    'User-Agent': 'Mozilla/5.0 (Linux; Android 5.0; SM-G900P Build/LRX21T) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.87 Mobile Safari/537.36'
-    }
-headers_desktop = {
-    'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:65.0) Gecko/20100101 Firefox/65.0'
-    }
+headers = {'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:65.0) Gecko/20100101 Firefox/65.0'}
 
 
 def build_list0(_pid, _handle, addon, title):
@@ -34,16 +29,18 @@ def build_list0(_pid, _handle, addon, title):
   pages = ['https://www.livefootballol.me/channels/']
   for i in range(2, 10):
     pages.append("https://www.livefootballol.me/channels/page-{}.html".format(i))
-  for purl in pages:
-    page = requests.get(purl, headers=headers_desktop).content
-    #xbmc.log(page, xbmc.LOGNOTICE)
-    tree = html.fromstring(page)
+  try:
+    for purl in pages:
+      page = requests.get(purl, headers=headers).content
+      #xbmc.log(page, xbmc.LOGNOTICE)
+      tree = html.fromstring(page)
 
-    for item in tree.xpath('//table[@class="uk-table uk-table-striped"]/*/tr/td/a'):
-      try:
+      for item in tree.xpath('//table[@class="uk-table uk-table-striped"]/*/tr/td/a'):
         lf_title = item.text_content().encode('utf-8').strip()
-        lf_link = "https://www.livefootballol.me{}".format(item.get('href').encode('utf-8').strip())
-        #xbmc.log(lf_title + " - " + lf_link, xbmc.LOGNOTICE)
+        xbmc.log(lf_title, xbmc.LOGNOTICE)
+        lf_link = "https://www.livefootballol.me" + item.get('href').encode('utf-8').strip()
+        xbmc.log(lf_link, xbmc.LOGNOTICE)
+
         listitem = xbmcgui.ListItem(label=lf_title)
         listitem.setInfo('video', {'title': lf_title, 'mediatype': 'video'})
         data = {
@@ -53,10 +50,9 @@ def build_list0(_pid, _handle, addon, title):
             "url" : lf_link
             }
         xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=True)
-      except Exception as ex:
-        xbmc.log('ERROR: {}'.format(html.tostring(item)), xbmc.LOGERROR)
-        xbmc.log('ERROR: {}'.format(str(ex)), xbmc.LOGERROR)
-        break
+  except Exception as ex:
+    xbmc.log(html.tostring(item), xbmc.LOGERROR)
+    xbmc.log(str(ex), xbmc.LOGERROR)
   xbmcplugin.endOfDirectory(_handle)
 
 def build_list1(_pid, _handle, addon, title, url):
@@ -64,7 +60,7 @@ def build_list1(_pid, _handle, addon, title, url):
 
   xbmc.log(url, xbmc.LOGNOTICE)
   pattern = re.compile(r'acestream:\/\/([0-z]{40})', re.IGNORECASE)
-  page = requests.get(url, headers=headers_desktop).content
+  page = requests.get(url, headers=headers).content
   tree = html.fromstring(page)
 
   items = tree.xpath('//table[@class="uk-table"]/*/tr/td');

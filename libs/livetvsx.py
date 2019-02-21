@@ -50,8 +50,8 @@ def build_list0(_pid, _handle, addon, title):
             }
         xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=True)
     except Exception as ex:
-      xbmc.log('ERROR: {}'.format(html.tostring(item)), xbmc.LOGERROR)
-      xbmc.log('ERROR: {}'.format(str(ex)), xbmc.LOGERROR)
+      xbmc.log(html.tostring(item), xbmc.LOGERROR)
+      xbmc.log(str(ex), xbmc.LOGERROR)
   xbmcplugin.addSortMethod(_handle, xbmcplugin.SORT_METHOD_LABEL)
   xbmcplugin.endOfDirectory(_handle)
 
@@ -92,8 +92,8 @@ def build_list1(_pid, _handle, addon, title, url):
             }
         xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=True)
     except Exception as ex:
-      xbmc.log('ERROR: {}'.format(html.tostring(item)), xbmc.LOGERROR)
-      xbmc.log('ERROR: {}'.format(str(ex)), xbmc.LOGERROR)
+      xbmc.log(html.tostring(item), xbmc.LOGERROR)
+      xbmc.log(str(ex), xbmc.LOGERROR)
   xbmcplugin.addSortMethod(_handle, xbmcplugin.SORT_METHOD_LABEL)
   xbmcplugin.endOfDirectory(_handle)
 
@@ -127,7 +127,7 @@ def build_list2(_pid, _handle, addon, title, url):
           }
       xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=False)
     except Exception as ex:
-      xbmc.log('ERROR: {}'.format(html.tostring(item)), xbmc.LOGERROR)
-      xbmc.log('ERROR: {}'.format(str(ex)), xbmc.LOGERROR)
+      xbmc.log(html.tostring(item), xbmc.LOGERROR)
+      xbmc.log(str(ex), xbmc.LOGERROR)
   xbmcplugin.endOfDirectory(_handle)
 
