@@ -10,7 +10,7 @@ function getHtml($url, $cookie = null, $mobile = true) {
   if ($mobile) {
     curl_setopt($ch, CURLOPT_USERAGENT, "");
   } else {
-    curl_setopt($ch, CURLOPT_USERAGENT, "");
+    curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:65.0) Gecko/20100101 Firefox/65.0");
   }
 
   if (curl_error($ch)) {
