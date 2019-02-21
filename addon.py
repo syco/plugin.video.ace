@@ -11,6 +11,7 @@ from lxml import html
 from urlparse import parse_qsl
 from datetime import datetime, timedelta
 
+from libs import phpscraper
 from libs import livefootballol
 from libs import arenavision
 from libs import livetvsx
@@ -22,13 +23,6 @@ addon = xbmcaddon.Addon()
 
 _pid = sys.argv[0]
 _handle = int(sys.argv[1])
-headers_mobile = {
-    'User-Agent': 'Mozilla/5.0 (Linux; Android 5.0; SM-G900P Build/LRX21T) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.87 Mobile Safari/537.36'
-    }
-headers_desktop = {
-    'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:65.0) Gecko/20100101 Firefox/65.0'
-    }
-
 
 
 def list_categories():
@@ -38,6 +32,16 @@ def list_categories():
   listitem = xbmcgui.ListItem(label=' Refresh List')
   listitem.setInfo('video', {'title': ' Refresh List', 'mediatype': 'video'})
   xbmcplugin.addDirectoryItem(handle=_handle, url=_pid, listitem=listitem, isFolder=True)
+
+  listitem = xbmcgui.ListItem(label="PHP Scrapers")
+  listitem.setInfo('video', {'title': "PHP Scrapers", 'mediatype': 'video'})
+  data = {
+      "provider": 'phpscraper',
+      "action": "list",
+      "title": "PHP Scrapers",
+      "link": ""
+      }
+  xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=True)
 
   if addon.getSetting('show_livefootballol') == "true":
     listitem = xbmcgui.ListItem(label='Live Football OL')
@@ -99,6 +103,12 @@ def router(paramstring):
   if params:
     if params['action'] == 'play':
       play_video(params['video'])
+
+    elif params['provider'] == 'phpscraper':
+      try:
+        phpscraper.build_list(_pid, _handle, addon, params['action'], params['title'], params['link'])
+      except Exception as e:
+        xbmc.log("type error: " + str(e), xbmc.LOGERROR)
 
     elif params['provider'] == 'livefootballol':
       if params['action'] == 'list0':
