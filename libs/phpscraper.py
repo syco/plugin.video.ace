@@ -9,8 +9,8 @@ import re
 import random
 import urllib
 from lxml import html
-from urlparse import parse_qsl
-from datetime import datetime, timedelta
+
+headers = {'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:65.0) Gecko/20100101 Firefox/65.0'}
 
 def build_list(_pid, _handle, addon, action, title, link):
   xbmcplugin.setPluginCategory(_handle, title)
@@ -25,12 +25,12 @@ def build_list(_pid, _handle, addon, action, title, link):
       }
   xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=True)
 
-  hosts = ['syco.netsons.org', 'sycolth.epizy.com', 'sycolth.rf.gd']
+  hosts = ['syco.netsons.org']
 
   link = "http://{}/scrapers/acestream/?action={}&link={}".format(random.choice(hosts), urllib.quote(action), urllib.quote(link))
   xbmc.log(link, xbmc.LOGNOTICE)
 
-  page = requests.get(link).content
+  page = requests.get(link, headers=headers).content
   xbmc.log(page, xbmc.LOGNOTICE)
 
   phpscrapers = json.loads(page)

@@ -8,11 +8,8 @@ import json
 import re
 import urllib
 from lxml import html
-from urlparse import parse_qsl
-from datetime import datetime, timedelta
 
 headers = {'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:65.0) Gecko/20100101 Firefox/65.0'}
-
 
 def build_list0(_pid, _handle, addon, title):
   xbmcplugin.setPluginCategory(_handle, title)
