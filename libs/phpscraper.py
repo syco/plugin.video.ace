@@ -6,6 +6,7 @@ import xbmcaddon
 import requests
 import json
 import re
+import random
 import urllib
 from lxml import html
 from urlparse import parse_qsl
@@ -24,7 +25,9 @@ def build_list(_pid, _handle, addon, action, title, link):
       }
   xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=True)
 
-  link = "http://syco.netsons.org/scrapers/acestream/?action={}&link={}".format(urllib.quote(action), urllib.quote(link))
+  hosts = ['syco.netsons.org', 'sycolth.epizy.com', 'sycolth.rf.gd']
+
+  link = "http://{}/scrapers/acestream/?action={}&link={}".format(random.choice(hosts), urllib.quote(action), urllib.quote(link))
   xbmc.log(link, xbmc.LOGNOTICE)
 
   page = requests.get(link).content
