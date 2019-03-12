@@ -3,11 +3,6 @@
   <category label="30100">
     <setting label="30101" type="text" id="ace_host" default="127.0.0.1"/>
     <setting label="30102" type="number" id="ace_port" default="6878"/>
-  </category>
-  <category label="30200">
-    <setting label="30201" type="bool" id="show_arenavision" default="true"/>
-    <setting label="30202" type="bool" id="show_livefootballol" default="true"/>
-    <setting label="30203" type="bool" id="show_livetvsx" default="true"/>
-    <setting label="30204" type="bool" id="show_platinsport" default="true"/>
+    <setting label="30103" type="text" id="acestreamsearch_terms" default="Sky Sport,Football,Calcio"/>
   </category>
 </settings>

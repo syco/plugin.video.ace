@@ -8,10 +8,13 @@ A kodi plug-in that scrapes acestream links from the web and populate a list und
 - python-lxml
 
 ### Supported websites: ###
-* arenavision.in
-* livefootballol.me
-* livetv.sx
-* platinsport.com
+
+* AceListing
+* Free Live Football Streaming
+* LiveTV.sx
+* Platin Sport
+* Reddit - LiveTvLinks
+* acestreamsearch.com
 
 ### Requirements ###
 In order to stream content you need acestream engine running on the same computer or on the same network, I personally start the engine with options "--log-stdout --client-console"

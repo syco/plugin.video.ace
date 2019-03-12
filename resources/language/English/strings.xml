@@ -2,9 +2,5 @@
   <string id="30100">Acestream settings</string>
   <string id="30101">Hostname for the acestream application</string>
   <string id="30102">Port for the acestream application</string>
-  <string id="30200">Enable / Disable providers</string>
-  <string id="30201">Load arenavision links</string>
-  <string id="30202">Load livefootballol links</string>
-  <string id="30203">Load livetv.sx links</string>
-  <string id="30204">Load platinsport links</string>
+  <string id="30103">Comma separated search terms for acestreamsearch.com</string>
 </strings>

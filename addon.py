@@ -12,10 +12,6 @@ from urlparse import parse_qsl
 from datetime import datetime, timedelta
 
 from libs import phpscraper
-from libs import livefootballol
-from libs import arenavision
-from libs import livetvsx
-from libs import platinsport
 
 # https://forum.kodi.tv/showthread.php?tid=324570
 
@@ -43,54 +39,28 @@ def list_categories():
       }
   xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=True)
 
-  if addon.getSetting('show_livefootballol') == "true":
-    listitem = xbmcgui.ListItem(label='Live Football OL')
-    listitem.setInfo('video', {'title': 'Live Football OL', 'mediatype': 'video'})
+  for tmp in addon.getSetting('acestreamsearch_terms').split(","):
+    listitem = xbmcgui.ListItem(label=tmp)
+    listitem.setInfo('video', {'title': tmp, 'mediatype': 'video'})
     data = {
-        "provider": "livefootballol",
-        "action": "list0",
-        "title": "Live Football OL"
-        }
-    xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=True)
-
-  if addon.getSetting('show_arenavision') == "true":
-    listitem = xbmcgui.ListItem(label='Arenavision')
-    listitem.setInfo('video', {'title': 'Arenavision', 'mediatype': 'video'})
-    data = {
-        "provider": "arenavision",
-        "action": "list0",
-        "title": "Arenavision"
-        }
-    xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=True)
-
-  if addon.getSetting('show_livetvsx') == "true":
-    listitem = xbmcgui.ListItem(label='LiveTV.sx')
-    listitem.setInfo('video', {'title': 'LiveTV.sx', 'mediatype': 'video'})
-    data = {
-        "provider": "livetvsx",
-        "action": "list0",
-        "title": "LiveTV.sx"
-        }
-    xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=True)
-
-  if addon.getSetting('show_platinsport') == "true":
-    listitem = xbmcgui.ListItem(label='Platinsport')
-    listitem.setInfo('video', {'title': 'Platinsport', 'mediatype': 'video'})
-    data = {
-        "provider": "platinsport",
-        "action": "list0",
-        "title": "PlatinSport"
+        "provider": 'phpscraper',
+        "action": "acestreamsearch-search-0",
+        "title": tmp,
+        "link": tmp
         }
     xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=True)
 
   xbmcplugin.endOfDirectory(_handle)
 
 
+
 def play_video(path):
   xbmcplugin.setResolvedUrl(_handle, True, listitem=xbmcgui.ListItem(path=path))
 
 
+
 xbmc.log(" ".join(sys.argv), xbmc.LOGNOTICE)
+
 
 
 def router(paramstring):
@@ -109,38 +79,6 @@ def router(paramstring):
         phpscraper.build_list(_pid, _handle, addon, params['action'], params['title'], params['link'])
       except Exception as e:
         xbmc.log("type error: " + str(e), xbmc.LOGERROR)
-
-    elif params['provider'] == 'livefootballol':
-      if params['action'] == 'list0':
-        try:
-          livefootballol.build_list0(_pid, _handle, addon, params['title'])
-        except Exception as e:
-          xbmc.log("type error: " + str(e), xbmc.LOGERROR)
-      elif params['action'] == 'list1':
-        livefootballol.build_list1(_pid, _handle, addon, params['title'], params['url'])
-
-    elif params['provider'] == 'arenavision':
-      if params['action'] == 'list0':
-        try:
-          arenavision.build_list0(_pid, _handle, addon, params['title'])
-        except Exception as e:
-          xbmc.log("type error: " + str(e), xbmc.LOGERROR)
-      elif params['action'] == 'list1':
-        arenavision.build_list1(_pid, _handle, addon, params['title'], params['url'])
-
-    elif params['provider'] == 'livetvsx':
-      if params['action'] == 'list0':
-        livetvsx.build_list0(_pid, _handle, addon, params['title'])
-      elif params['action'] == 'list1':
-        livetvsx.build_list1(_pid, _handle, addon, params['title'], params['url'])
-      elif params['action'] == 'list2':
-        livetvsx.build_list2(_pid, _handle, addon, params['title'], params['url'])
-
-    elif params['provider'] == 'platinsport':
-      if params['action'] == 'list0':
-        platinsport.build_list0(_pid, _handle, addon, params['title'])
-      elif params['action'] == 'list1':
-        platinsport.build_list1(_pid, _handle, addon, params['title'], params['url'])
 
   else:
     list_categories()
