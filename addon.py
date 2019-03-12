@@ -40,12 +40,12 @@ def list_categories():
   xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=True)
 
   for tmp in addon.getSetting('acestreamsearch_terms').split(","):
-    listitem = xbmcgui.ListItem(label=tmp)
-    listitem.setInfo('video', {'title': tmp, 'mediatype': 'video'})
+    listitem = xbmcgui.ListItem(label='ASS {}'.format(tmp))
+    listitem.setInfo('video', {'title': 'ASS {}'.format(tmp), 'mediatype': 'video'})
     data = {
         "provider": 'phpscraper',
         "action": "acestreamsearch-search-0",
-        "title": tmp,
+        "title": 'ASS {}'.format(tmp),
         "link": tmp
         }
     xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=True)
