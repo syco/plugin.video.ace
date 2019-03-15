@@ -41,7 +41,8 @@ def build_list(_pid, _handle, addon, action, title, link):
       listitem.setProperty('IsPlayable', 'true')
       data = {
           "action": "play",
-          "video" : 'http://{0}:{1}/ace/manifest.m3u8?id={2}'.format(addon.getSetting('ace_host'), addon.getSetting('ace_port'), phpscraper['link'])
+      #    "video" : 'http://{0}:{1}/ace/manifest.m3u8?id={2}'.format(addon.getSetting('ace_host'), addon.getSetting('ace_port'), phpscraper['link'])
+          "video" : 'http://{0}:{1}/ace/getstream?id={2}&.mp4'.format(addon.getSetting('ace_host'), addon.getSetting('ace_port'), phpscraper['link'])
           }
       xbmcplugin.addDirectoryItem(handle=_handle, url='{0}?data={1}'.format(_pid, urllib.quote(json.dumps(data))), listitem=listitem, isFolder=False)
     else:
